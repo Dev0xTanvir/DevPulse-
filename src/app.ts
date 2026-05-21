@@ -4,6 +4,7 @@ import express, {
 } from "express";
 
  import globalErrorHandler from "./middleware/globalErrorHandler";
+import { authRoute } from "./modules/auth/auth.route";
 const app: Application = express();
 
 app.use(CookieParser());
@@ -12,12 +13,12 @@ app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 
 
+//  app.use("/api/issues", );
 
-app.use("/api/issues", );
-app.use("/api/auth", );
+ app.use("/api/auth", authRoute);
 
 // Global Error Handling Middleware
 
-app.use(globalErrorHandler);
+ app.use(globalErrorHandler);
 
 export default app;
