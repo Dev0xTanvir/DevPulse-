@@ -12,7 +12,7 @@ const auth = (...roles: ROLES[]) => {
 
       const token = req.headers.authorization;
       if (!token) {
-        sendResponse(res, {
+        return sendResponse(res, {
           statusCode: 401,
           success: false,
           message: "Unauthorized access!!",
@@ -28,16 +28,16 @@ const auth = (...roles: ROLES[]) => {
 
       const userdata = await pool.query(
         `
-            SELECT  *  FROM users WHERE email=$1
+            SELECT  *  FROM users WHERE id=$1
         `,
-        [decoded.email],
+        [decoded.id],
       );
 
       // ! check user from db
 
       const user = userdata.rows[0];
       if (userdata.rows.length === 0) {
-        sendResponse(res, {
+        return sendResponse(res, {
           statusCode: 404,
           success: false,
           message: "user not found!!",
@@ -47,7 +47,7 @@ const auth = (...roles: ROLES[]) => {
       //! check user role
 
       if (roles.length && !roles.includes(user.role)) {
-        sendResponse(res, {
+        return sendResponse(res, {
           statusCode: 403,
           success: false,
           message: "user forbiden!!",
@@ -58,7 +58,7 @@ const auth = (...roles: ROLES[]) => {
 
       next();
     } catch (error: any) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 500,
         success: false,
         message: error.message,
