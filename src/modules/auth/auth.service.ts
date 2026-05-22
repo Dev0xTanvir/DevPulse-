@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import { pool } from "../../database/db";
 import type { auth } from "./auth.interface";
+import jwt from "jsonwebtoken";
+import config from "../../config";
 
 // singup
 
@@ -39,8 +41,41 @@ const singupuserIntodb = async (paylod: auth) => {
 
 // singin
 
-const loginuserIntodb = async () => {
+const loginuserIntodb = async (playlod: auth) => {
+  const { email, password } = playlod;
 
+  const singindata = await pool.query(
+    `
+    SELECT id,name,email,password,role,created_at,updated_at FROM users
+    WHERE email=$1
+    `,
+    [email],
+  );
+
+  const user = singindata.rows[0];
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  const inMatch = await bcrypt.compare(password, user.password);
+  if (!inMatch) {
+    throw new Error("Invalid email or password");
+  }
+
+  const jwtPaylod = {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+  };
+
+  const token = jwt.sign(jwtPaylod, config.secret as string, {
+    expiresIn: config.expire ,
+  });
+
+  const { password: pass, ...userdata } = user;
+
+  return { token, user: userdata };
 };
 
 export const authservice = {

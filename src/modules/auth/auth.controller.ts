@@ -26,8 +26,22 @@ const createsingup = async (req: Request, res: Response) => {
 // login
 
 const createlogin = async (req: Request, res: Response) => {
-  //const result = authservice.loginuserIntodb()
-  console.log("hi");
+  try {
+    const result = await authservice.loginuserIntodb(req.body);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Login successfully!",
+      data: result,
+    });
+  } catch (error: any) {
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
 };
 
 export const authcontroller = {
