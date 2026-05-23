@@ -48,8 +48,9 @@ const getallissue = async (req: Request, res: Response) => {
 // get singleissue
 
 const getsingleissue = async (req: Request, res: Response) => {
+  const { id } = req.params;
   try {
-    const result = await issueservice.getsingleservice(req.params.id);
+    const result = await issueservice.getsingleservice(id as string);
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -66,8 +67,58 @@ const getsingleissue = async (req: Request, res: Response) => {
   }
 };
 
+// update issue
+
+const updateissue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await issueservice.updateservice(
+      id as string,
+      req.body,
+      req.user,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue updated successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+// delete issue
+
+const deleteissue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await issueservice.deleteservice(id as string);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue delete successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
 export const issuecontroller = {
   creatissue,
   getallissue,
   getsingleissue,
+  updateissue,
+  deleteissue,
 };

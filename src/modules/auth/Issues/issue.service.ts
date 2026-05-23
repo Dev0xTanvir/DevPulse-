@@ -121,8 +121,84 @@ const getsingleservice = async (id: string) => {
   };
 };
 
+// update service
+
+const updateservice = async (id: string, payelod: iIssue, user: any) => {
+  const result = await pool.query(
+    `
+             SELECT  *  FROM issues WHERE id=$1
+        `,
+    [id],
+  );
+
+  const issue = result.rows[0];
+
+  if (!issue) {
+    throw new Error("Issue not found");
+  }
+
+  // check permision
+
+  if (user.role === "contributor") {
+    if (issue.reporter_id !== user.id) {
+      throw new Error("You can update only your own issue");
+    }
+  }
+
+  // check status
+
+  if (issue.status !== "open") {
+    throw new Error("You cannot update resolved/in_progress issue");
+  }
+
+  // update issues
+
+  const { title, description, type } = payelod;
+
+  const updateissue = await pool.query(
+    `
+        UPDATE issues
+      SET title=$1,description=$2,type=$3,
+      updated_at=NOW() 
+      WHERE  id=$4
+      RETURNING *
+    `,
+    [title, description, type, id],
+  );
+
+  return updateissue.rows[0];
+};
+
+// delete service
+
+const deleteservice = async (id: string) => {
+  const result = await pool.query(
+    `
+             SELECT  FROM issues WHERE id=$1
+        `,
+    [id],
+  );
+
+  const issue = result.rows[0];
+  if (!issue) {
+    throw new Error("issue not found");
+  }
+
+  // delete issue
+
+  const deleteissue = await pool.query(
+    `
+    DELETE  FROM issues WHERE id=$1
+    `,
+    [id],
+  );
+  return deleteissue.rows[0];
+};
+
 export const issueservice = {
   createservice,
   getallservice,
   getsingleservice,
+  updateservice,
+  deleteservice,
 };
