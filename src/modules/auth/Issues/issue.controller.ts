@@ -24,15 +24,36 @@ const creatissue = async (req: Request, res: Response) => {
   }
 };
 
-// get issues
+// get allissues
 
 const getallissue = async (req: Request, res: Response) => {
   try {
-    const result = await issueservice.getallservice(req.params);
+    const result = await issueservice.getallservice(req.query);
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "get issues successfully!",
+      message: "getall issues successfully!",
+      data: result,
+    });
+  } catch (error: any) {
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+// get singleissue
+
+const getsingleissue = async (req: Request, res: Response) => {
+  try {
+    const result = await issueservice.getsingleservice(req.params.id);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "getsingle issues successfully!",
       data: result,
     });
   } catch (error: any) {
@@ -48,4 +69,5 @@ const getallissue = async (req: Request, res: Response) => {
 export const issuecontroller = {
   creatissue,
   getallissue,
+  getsingleissue,
 };
