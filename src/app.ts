@@ -1,4 +1,4 @@
-import CookieParser from "cookie-parser";
+import cookieParser from "cookie-parser";
 import express, { type Application } from "express";
 
 import globalErrorHandler from "./middleware/globalErrorHandler";
@@ -6,7 +6,7 @@ import { authRoute } from "./modules/auth/auth.route";
 import { issueRoute } from "./modules/auth/Issues/issue.route";
 const app: Application = express();
 
-app.use(CookieParser());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
